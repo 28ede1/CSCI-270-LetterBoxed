@@ -100,7 +100,7 @@ class LetterBoxedSearchSpace(SearchSpace):
 
         if self.is_valid_word(prev_word_built):
             new_state = (prev_word_built[-1], prev_letter_index, letter_tracker)
-            sucessor = (new_state, 'ENTER', 1)
+            successor = (new_state, 'ENTER', 1)
             successor_list.append(successor)
 
         return successor_list

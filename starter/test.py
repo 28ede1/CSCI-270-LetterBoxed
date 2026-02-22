@@ -83,9 +83,29 @@ def test_get_sucessors():
         (('pai', 8, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'i', 0),
     ]
 
+    state_2 = ('pan', 7, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0))
+    expected_successors_2 = [
+        (('panm', 0, (1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'm', 0),
+        (('panp', 2, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'p', 0),
+        (('panz', 3, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'z', 0),
+        (('pane', 4, (0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0)), 'e', 0),
+        (('pant', 5, (0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0)), 't', 0),
+        (('pana', 9, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'a', 0),
+        (('panc', 10, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0)), 'c', 0),
+        (('panh', 11, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1)), 'h', 0),
+        (('n', 7, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'ENTER', 1)
+    ]
+
+
     actual_successors_1 = puzzle.get_successors(state_1)
+    actual_successors_2 = puzzle.get_successors(state_2)
+
     assert len(expected_successors_1) == len(actual_successors_1)
     assert actual_successors_1 == expected_successors_1
+
+    assert len(expected_successors_2) == len(actual_successors_2)
+    print(actual_successors_2)
+    assert actual_successors_2 == expected_successors_2
 
 
 if __name__ == "__main__":
