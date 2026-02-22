@@ -61,9 +61,20 @@ class LetterBoxedSearchSpace(SearchSpace):
                 if #1 and #2 apply, create a new state variable that reflects the letter being added and initialize a tuple
                 (next_state, action, cost) to add to the returned list
 
-                ? Handle case for pressing Enter to lock in a word
-                ? Handle case of whether or not to have a cost of 1 or 0
+                    the new_state variable is (state_1[0] + letter, index_of_letter, letter_tracker (should be updated at that index)
+                    to be one if it hasnt already)
+
+                    action is the letter chosen
+
+                have a cost of 0 for the cost
         """
+
+        # lastly, we have the option of creating a state to just hits enter
+        # if word in state is in the list of words, create a new state tuple
+        # ('last letter of word', index of that last letter, updated letter_tracker)
+        # have 'ENTER' be the action, have cost be 1
+
+
         return successor_list
 
 
