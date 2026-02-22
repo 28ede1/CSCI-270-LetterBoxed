@@ -48,6 +48,15 @@ class LetterBoxedSearchSpace(SearchSpace):
         successor_list = []
 
         """
+        1) create function to see if element is in word list
+        use binary search
+
+        2) create function to see if a string exists as 
+        a prefix in the word list
+        
+        """
+
+        """
         Take in a state variable state_1 = ('pa', 9, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)
         Create a list of tuples that consist of (next_state, action, cost)
         To do so:
