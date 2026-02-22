@@ -6,7 +6,7 @@ with open("words.scrabble.txt") as f:
 puzzle = LetterBoxedSearchSpace(list("mkpzetuniach"), valid_words)
 
 def test_constructor_creates_instance_variables():
-    expected_game_letters = ['m', 'k',  'p','z', 'e', 't', 'u', 'n', 'i', 'a', 'c', 'h']
+    expected_game_letters = ['m', 'k', 'p','z', 'e', 't', 'u', 'n', 'i', 'a', 'c', 'h']
     expected_start_state = ('', None, (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
     assert puzzle.game_letters == expected_game_letters, \
@@ -38,6 +38,55 @@ def test_get_sucessors():
 
     assert puzzle.get_successors(state_1) == expected_successor_list
 
+def test_is_valid_word():
+    assert puzzle.is_valid_word('aah') == True
+    assert puzzle.is_valid_word('zzz') == True
+    assert puzzle.is_valid_word('') == False
+    assert puzzle.is_valid_word('a') == False
+    assert puzzle.is_valid_word('zzzzz') == False
+    assert puzzle.is_valid_word('zombies') == True
+    assert puzzle.is_valid_word('zzz') == True
+    assert puzzle.is_valid_word('bungle') == True
+
+def test_is_prefix_of_valid_word():
+    assert puzzle.is_prefix_of_valid_word("") == True
+    assert puzzle.is_prefix_of_valid_word("a") == True
+    assert puzzle.is_prefix_of_valid_word("bungalow") == True
+    assert puzzle.is_prefix_of_valid_word("aaaa") == False
+    assert puzzle.is_prefix_of_valid_word("zip") == True
+    assert puzzle.is_prefix_of_valid_word("aah") == True
+    assert puzzle.is_prefix_of_valid_word("zzz") == True
+    assert puzzle.is_prefix_of_valid_word("zymt") == False
+    assert puzzle.is_prefix_of_valid_word("pah") == True
+
+def test_does_not_lie_on_same_edge():
+    assert puzzle.does_not_lie_on_same_edge(0, 0) == False
+    assert puzzle.does_not_lie_on_same_edge(0, 1) == False
+    assert puzzle.does_not_lie_on_same_edge(0, 2) == False
+    assert puzzle.does_not_lie_on_same_edge(0, 3) == True
+    assert puzzle.does_not_lie_on_same_edge(0, 5) == True
+    assert puzzle.does_not_lie_on_same_edge(11, 5) == True
+    assert puzzle.does_not_lie_on_same_edge(11, 11) == False
+    assert puzzle.does_not_lie_on_same_edge(5, 9) == True
+
+def test_get_sucessors():
+    state_1 = ('pa', 9, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0))
+    expected_successors_1 = [
+        (('pam', 0, (1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'm', 0),
+        (('pak', 1, (0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'k', 0),
+        (('pap', 2, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'p', 0),
+        (('paz', 3, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'z', 0),
+        (('pae', 4, (0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0)), 'e', 0),
+        (('pat', 5, (0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0)), 't', 0),
+        (('pau', 6, (0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0)), 'u', 0),
+        (('pan', 7, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'n', 0),
+        (('pai', 8, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'i', 0),
+    ]
+
+    actual_successors_1 = puzzle.get_successors(state_1)
+    assert len(expected_successors_1) == len(actual_successors_1)
+    assert actual_successors_1 == expected_successors_1
+
 
 if __name__ == "__main__":
     test_constructor_creates_instance_variables()
@@ -45,5 +94,17 @@ if __name__ == "__main__":
     
     test_is_final_state()
     print("\n#2 is_final_state passes!")
+
+    test_is_valid_word()
+    print("\n#3 is_valid_word passes!")
+
+    test_is_prefix_of_valid_word()
+    print("\n#4 is_valid_prefix_of_word passes!")
+
+    test_does_not_lie_on_same_edge()
+    print("\n#5 does_not_lie_on_same_edge passes!")
+
+    test_get_sucessors()
+    print("\n#6 get_successors passes!")
 
     print("\nAll tests passed!")

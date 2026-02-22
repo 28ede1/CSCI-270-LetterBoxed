@@ -37,6 +37,8 @@ class LetterBoxedSearchSpace(SearchSpace):
         Returns true is all letters in 'state' have been used AND
         current_word so far has a length of 1.
 
+        Uses the tuple given in the 2th index that keeps track of which letters have been used.
+
         Args:
             state (tuple[int, int, tuple[int]]): the current game state
         """
@@ -44,45 +46,62 @@ class LetterBoxedSearchSpace(SearchSpace):
         current_word = state[0]
         return 0 not in letter_tracker and len(current_word) == 1
 
+    def is_valid_word(self, target):
+        left = 0
+        right = len(self.valid_words) - 1
+
+        while left <= right:
+            mid = (right + left) // 2
+
+            if self.valid_words[mid] == target:
+                return True 
+            
+            elif self.valid_words[mid] < target:
+                left = mid + 1
+            else:
+                right = mid - 1
+        return False 
+
+    def is_prefix_of_valid_word(self, prefix):
+        left = 0
+        right = len(self.valid_words) - 1
+        prefix_length = len(prefix)
+
+        while left <= right:
+            mid = (right + left) // 2
+            word_prefix = self.valid_words[mid][:prefix_length]
+
+            if word_prefix == prefix:
+                return True
+            elif word_prefix < prefix:
+                left = mid + 1
+            else:
+                right = mid - 1
+        return False
+
+    def does_not_lie_on_same_edge(self, prev_chosen_index, current_chosen_index):
+        return not (prev_chosen_index // 3 == current_chosen_index // 3) # assumes there are 12 game letters in the game
+
     def get_successors(self, state):
         successor_list = []
+        prev_letter_index = state[1]
+        prev_word_built = state[0]
+        letter_tracker = state[2]
 
-        """
-        1) create function to see if element is in word list
-        use binary search
+        for i in range(len(self.game_letters)):
+            if self.does_not_lie_on_same_edge(prev_letter_index, i) and self.is_prefix_of_valid_word(prev_word_built + self.game_letters[i]):
+                new_tracker = list(letter_tracker)
+                new_tracker[i] = 1
+                new_tracker = tuple(new_tracker)
 
-        2) create function to see if a string exists as 
-        a prefix in the word list
-        
-        """
+                new_state = (prev_word_built + self.game_letters[i], i, new_tracker)
+                successor = (new_state, self.game_letters[i], 0)
+                successor_list.append(successor)
 
-        """
-        Take in a state variable state_1 = ('pa', 9, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)
-        Create a list of tuples that consist of (next_state, action, cost)
-        To do so:
-
-        For each index (letter) in state_1[2]:
-                #1 check that the last letter used and the next letter to choose do 
-                not lie on the same on the same
-                #2 check that the chosen letter 'leads' to some word in valid_words (by 'leads' this means that the  
-                word to now build is the prefix of some word in valid_words)
-
-                if #1 and #2 apply, create a new state variable that reflects the letter being added and initialize a tuple
-                (next_state, action, cost) to add to the returned list
-
-                    the new_state variable is (state_1[0] + letter, index_of_letter, letter_tracker (should be updated at that index)
-                    to be one if it hasnt already)
-
-                    action is the letter chosen
-
-                have a cost of 0 for the cost
-        """
-
-        # lastly, we have the option of creating a state to just hits enter
-        # if word in state is in the list of words, create a new state tuple
-        # ('last letter of word', index of that last letter, updated letter_tracker)
-        # have 'ENTER' be the action, have cost be 1
-
+        if self.is_valid_word(prev_word_built):
+            new_state = (prev_word_built[-1], prev_letter_index, letter_tracker)
+            sucessor = (new_state, 'ENTER', 1)
+            successor_list.append(successor)
 
         return successor_list
 
