@@ -1,4 +1,5 @@
 from letterboxed import LetterBoxedSearchSpace
+from search import uniform_cost_search
 
 with open("words.scrabble.txt") as f:
     valid_words = [line.strip() for line in f]
@@ -68,6 +69,7 @@ def test_does_not_lie_on_same_edge():
     assert puzzle.does_not_lie_on_same_edge(11, 5) == True
     assert puzzle.does_not_lie_on_same_edge(11, 11) == False
     assert puzzle.does_not_lie_on_same_edge(5, 9) == True
+    assert puzzle.does_not_lie_on_same_edge(None, 1) == True
 
 def test_get_sucessors():
     state_1 = ('pa', 9, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0))
@@ -107,6 +109,8 @@ def test_get_sucessors():
     print(actual_successors_2)
     assert actual_successors_2 == expected_successors_2
 
+def test_search_space():
+    uniform_cost_search(puzzle)
 
 if __name__ == "__main__":
     test_constructor_creates_instance_variables()
@@ -128,3 +132,4 @@ if __name__ == "__main__":
     print("\n#6 get_successors passes!")
 
     print("\nAll tests passed!")
+    test_search_space()

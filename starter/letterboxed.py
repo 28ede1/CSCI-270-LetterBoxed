@@ -80,6 +80,8 @@ class LetterBoxedSearchSpace(SearchSpace):
         return False
 
     def does_not_lie_on_same_edge(self, prev_chosen_index, current_chosen_index):
+        if prev_chosen_index is None: # to account for start state, any current_chosen_index is valid
+            return True
         return not (prev_chosen_index // 3 == current_chosen_index // 3) # assumes there are 12 game letters in the game
 
     def get_successors(self, state):
