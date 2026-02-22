@@ -45,7 +45,26 @@ class LetterBoxedSearchSpace(SearchSpace):
         return 0 not in letter_tracker and len(current_word) == 1
 
     def get_successors(self, state):
-        pass
+        successor_list = []
+
+        """
+        Take in a state variable state_1 = ('pa', 9, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)
+        Create a list of tuples that consist of (next_state, action, cost)
+        To do so:
+
+        For each index (letter) in state_1[2]:
+                #1 check that the last letter used and the next letter to choose do 
+                not lie on the same on the same
+                #2 check that the chosen letter 'leads' to some word in valid_words (by 'leads' this means that the  
+                word to now build is the prefix of some word in valid_words)
+
+                if #1 and #2 apply, create a new state variable that reflects the letter being added and initialize a tuple
+                (next_state, action, cost) to add to the returned list
+
+                ? Handle case for pressing Enter to lock in a word
+                ? Handle case of whether or not to have a cost of 1 or 0
+        """
+        return successor_list
 
 
 def create_heuristic(letters, words):
