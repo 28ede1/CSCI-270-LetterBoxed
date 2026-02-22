@@ -27,12 +27,9 @@ def test_constructor_initializes_letter_tracker_correctly():
 
 def test_constructor_stores_valid_words():
     puzzle = LetterBoxedSearchSpace(list("mkpzetuniach"), valid_words)
-
-    assert len(puzzle.valid_words) > 0, \
-        "valid_words should not be empty."
-
+    
     assert "aah" in puzzle.valid_words, \
-        "'aah' should exist in the loaded Scrabble word dictionary."
+        "'aah' should exist in the valid_words word list"
 
 
 if __name__ == "__main__":
