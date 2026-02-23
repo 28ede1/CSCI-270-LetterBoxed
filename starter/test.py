@@ -1,5 +1,5 @@
-from letterboxed import LetterBoxedSearchSpace
-from search import uniform_cost_search
+from letterboxed import LetterBoxedSearchSpace, create_heuristic
+from search import uniform_cost_search, a_star_search
 
 with open("words.scrabble.txt") as f:
     valid_words = [line.strip() for line in f]
@@ -103,6 +103,13 @@ def test_get_sucessors():
 def test_search_space():
     uniform_cost_search(puzzle, memoize=True)
 
+def test_a_star_search():
+    words = puzzle.valid_words
+    game_letters = puzzle.game_letters
+
+    solution = a_star_search(puzzle, create_heuristic(game_letters, words))
+    return solution
+
 if __name__ == "__main__":
     test_constructor_creates_instance_variables()
     print("\n#1 LetterBoxedSearchSpace constructor passes!")
@@ -123,4 +130,6 @@ if __name__ == "__main__":
     print("\n#6 get_successors passes!")
 
     print("\nAll tests passed!")
-    test_search_space()
+    # test_search_space()
+
+    test_a_star_search()

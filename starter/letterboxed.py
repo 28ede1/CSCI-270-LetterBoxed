@@ -138,4 +138,43 @@ class LetterBoxedSearchSpace(SearchSpace):
 
 
 def create_heuristic(letters, words):
-    pass
+
+    def find_longest_unique_lettered_word_count(words):
+        max_length = float("-inf")
+
+        for word in words:
+            max_length = max(max_length, len(set(word)))
+        return max_length
+    
+    def find_least_used_letter_in_dictionary(game_letters, words):
+        freq_map = {letter:0 for letter in game_letters}
+
+        for word in words:
+            for letter in word:
+                if letter in freq_map:
+                    freq_map[letter] += 1
+
+        min_freq = min(freq_map.values())
+        
+        for letter, freq in freq_map.items():
+            if freq == min_freq:
+                return game_letters.index(letter)
+            
+    max_length_word = find_longest_unique_lettered_word_count(words)  
+    least_freq_letter_index = find_least_used_letter_in_dictionary(list("mkpzetuniach"), words)
+    def heuristic(state, space):
+        state_score = 0
+        state_0s_count = state[2].count(0)
+        score = state_0s_count / max_length_word
+        if score <= 0:
+            state_score += 1
+        elif score > 0:
+            state_score += 2
+
+        if state[2][least_freq_letter_index] == 1:
+            state_score += 1
+        else:
+            state_score += 2
+
+        return state_score
+    return heuristic
