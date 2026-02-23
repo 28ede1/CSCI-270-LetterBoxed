@@ -14,7 +14,9 @@ def test_constructor_creates_instance_variables():
     "Expected " + expected_game_letters + ", got : " + str(puzzle.game_letters)
     assert puzzle.start_state == expected_start_state
     assert len(puzzle.valid_words) > 0
-    assert 'skewness' in puzzle.valid_words
+
+    assert "aah" not in puzzle.valid_words
+    assert "tuna" not in puzzle.valid_words
 
 def test_is_final_state():
     state_1 = ('k', 1, (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
@@ -40,25 +42,22 @@ def test_get_sucessors():
     assert puzzle.get_successors(state_1) == expected_successor_list
 
 def test_is_valid_word():
-    assert puzzle.is_valid_word('aah') == True
-    assert puzzle.is_valid_word('zzz') == True
+    assert puzzle.is_valid_word('aah') == False
+    assert puzzle.is_valid_word('zzz') == False
     assert puzzle.is_valid_word('') == False
     assert puzzle.is_valid_word('a') == False
     assert puzzle.is_valid_word('zzzzz') == False
-    assert puzzle.is_valid_word('zombies') == True
-    assert puzzle.is_valid_word('zzz') == True
-    assert puzzle.is_valid_word('bungle') == True
+    assert puzzle.is_valid_word('zombies') == False
+    assert puzzle.is_valid_word('zzz') == False
 
 def test_is_prefix_of_valid_word():
     assert puzzle.is_prefix_of_valid_word("") == True
     assert puzzle.is_prefix_of_valid_word("a") == True
-    assert puzzle.is_prefix_of_valid_word("bungalow") == True
+    assert puzzle.is_prefix_of_valid_word("bungalow") == False
     assert puzzle.is_prefix_of_valid_word("aaaa") == False
     assert puzzle.is_prefix_of_valid_word("zip") == True
-    assert puzzle.is_prefix_of_valid_word("aah") == True
-    assert puzzle.is_prefix_of_valid_word("zzz") == True
+    assert puzzle.is_prefix_of_valid_word("aah") == False
     assert puzzle.is_prefix_of_valid_word("zymt") == False
-    assert puzzle.is_prefix_of_valid_word("pah") == True
 
 def test_does_not_lie_on_same_edge():
     assert puzzle.does_not_lie_on_same_edge(0, 0) == False
@@ -75,25 +74,19 @@ def test_get_sucessors():
     state_1 = ('pa', 9, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0))
     expected_successors_1 = [
         (('pam', 0, (1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'm', 0),
-        (('pak', 1, (0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'k', 0),
         (('pap', 2, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'p', 0),
-        (('paz', 3, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'z', 0),
         (('pae', 4, (0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0)), 'e', 0),
         (('pat', 5, (0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0)), 't', 0),
-        (('pau', 6, (0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0)), 'u', 0),
         (('pan', 7, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'n', 0),
         (('pai', 8, (0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0)), 'i', 0),
     ]
 
     state_2 = ('pan', 7, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0))
     expected_successors_2 = [
-        (('panm', 0, (1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'm', 0),
         (('panp', 2, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'p', 0),
-        (('panz', 3, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'z', 0),
         (('pane', 4, (0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0)), 'e', 0),
         (('pant', 5, (0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0)), 't', 0),
         (('pana', 9, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'a', 0),
-        (('panc', 10, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0)), 'c', 0),
         (('panh', 11, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1)), 'h', 0),
         (('n', 7, (0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0)), 'ENTER', 1)
     ]
@@ -104,13 +97,11 @@ def test_get_sucessors():
 
     assert len(expected_successors_1) == len(actual_successors_1)
     assert actual_successors_1 == expected_successors_1
-
     assert len(expected_successors_2) == len(actual_successors_2)
-    print(actual_successors_2)
     assert actual_successors_2 == expected_successors_2
 
 def test_search_space():
-    uniform_cost_search(puzzle)
+    uniform_cost_search(puzzle, memoize=True)
 
 if __name__ == "__main__":
     test_constructor_creates_instance_variables()

@@ -28,6 +28,35 @@ class LetterBoxedSearchSpace(SearchSpace):
         self.game_letters = letters
         self.valid_words = words
         self.start_state = ('', None,  tuple([0] * len(letters)))
+        self.valid_words = self.filter_out_invalid_words(self.valid_words)
+
+    def filter_out_invalid_words(self, word_list):
+        def can_make_word_from_letters(letters, word):
+            for letter in word:
+                if letter not in letters:
+                    return False
+            return True
+        
+        def has_characters_on_same_edge(word):
+            if len(word) == 1:
+                return False
+            left = 0
+            right = 1
+
+            while right < len(word):
+                prev_char_index = self.game_letters.index(word[left])
+                curr_char_index = self.game_letters.index(word[right])
+                if prev_char_index // 3 == curr_char_index // 3:
+                    return True
+                left += 1
+                right += 1
+            return False
+
+        filtered_words = []
+        for word in word_list:
+            if can_make_word_from_letters(self.game_letters, word) and not has_characters_on_same_edge(word):
+                filtered_words.append(word)
+        return filtered_words
 
     def get_start_state(self):
         return self.start_state
