@@ -1,14 +1,13 @@
 from search import SearchSpace, a_star_search
 
-
 class LetterBoxedSearchSpace(SearchSpace):
 
     def __init__(self, letters, words):
         """
         Search space representation for Letter Boxpuzzle.
 
-        A 'state' should include information about the current word build, the last letter clicked, and 
-        some way of describing which of the letters in the puzzle have been used. 
+        States include information about the current word built, the last letter clicked, and 
+        a tuple that shows what game letters have been used.
 
         Ex:
         start_state = ('', None, (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
@@ -17,27 +16,25 @@ class LetterBoxedSearchSpace(SearchSpace):
 
         Args:
             letters (list[str]): list of board letters
-            words (list[str]): list of valid dictionary words
+            words (list[str]): complete list of all dictionary words sorted
 
         Attributes:
-            self.game_letters (list[str]): the 12 board letters given
-            self.valid_words (list[str]): the valid dictionary words 
+            self.game_letters (list[str]): the 12 game letters given
+            self.valid_words (list[str]): the filtered valid dictionary words sorted
             self.start_state (tuple[int, int, tuple[int]]): represents starting game state information
         """
         super().__init__()
         self.game_letters = letters
-        self.valid_words = words
         self.start_state = ('', None,  tuple([0] * len(letters)))
-        self.valid_words = self.filter_out_invalid_words(self.valid_words)
+        self.valid_words = self.filter_out_invalid_words(words)
 
-    def filter_out_invalid_words(self, word_list):
-        def can_make_word_from_letters(letters, word):
-            for letter in word:
-                if letter not in letters:
-                    return False
-            return True
-        
-        def has_characters_on_same_edge(word):
+    def can_make_word_from_letters(self, word):
+        for letter in word:
+            if letter not in self.game_letters:
+                return False
+        return True
+    
+    def has_letters_on_same_edge(self, word):
             if len(word) == 1:
                 return False
             left = 0
@@ -52,9 +49,23 @@ class LetterBoxedSearchSpace(SearchSpace):
                 right += 1
             return False
 
+    def filter_out_invalid_words(self, word_list):
+        """
+        Based on game rules, filters out words that:
+
+        1) contain characters that are not included in the list of 12 game letters
+        2) containers any two adjacent characters that lie on the same 'edge' 
+
+        Args:
+            wordlist (list[str]) : list of all dictionary words sorted
+        
+        Return:
+            filtered_list (list[str]) : list of all valid words 
+        """
+
         filtered_words = []
         for word in word_list:
-            if can_make_word_from_letters(self.game_letters, word) and not has_characters_on_same_edge(word):
+            if self.can_make_word_from_letters(word) and not self.has_letters_on_same_edge(word):
                 filtered_words.append(word)
         return filtered_words
 
@@ -76,6 +87,14 @@ class LetterBoxedSearchSpace(SearchSpace):
         return 0 not in letter_tracker and len(current_word) == 1
 
     def is_valid_word(self, target):
+        """
+        Use binary search to see if a target is in the filtered and sorted self.valid_words
+
+        Args:
+            target (str) : target word
+        Return:
+            (boolean) : True if found, False if not
+        """
         left = 0
         right = len(self.valid_words) - 1
 
@@ -92,6 +111,16 @@ class LetterBoxedSearchSpace(SearchSpace):
         return False 
 
     def is_prefix_of_valid_word(self, prefix):
+        """
+        Use binary search to find whether or not 'prefix' string exist as some 
+        prefix of a word in the self.valid_words sorted filtered list.
+
+        Args:
+            prefix (str) : prefix string
+
+        Return:
+           (boolean) : True is found/False if not found
+        """
         left = 0
         right = len(self.valid_words) - 1
         prefix_length = len(prefix)
@@ -109,6 +138,17 @@ class LetterBoxedSearchSpace(SearchSpace):
         return False
 
     def does_not_lie_on_same_edge(self, prev_chosen_index, current_chosen_index):
+        """
+        Use mod to group game_letters into 4 rows and determine whether
+        the letter at prev_chosen_index and letter at current_chosen_index
+        lie in the same row/edge.
+
+        Args:
+            prev_chosen_index (int) : index of prev chosen letter
+            current_chosen_index (int) : index of current letter to choose
+        Return:
+            (boolean) : False if they lie on the same edge, True if not
+        """
         if prev_chosen_index is None: # to account for start state, any current_chosen_index is valid
             return True
         return not (prev_chosen_index // 3 == current_chosen_index // 3) # assumes there are 12 game letters in the game

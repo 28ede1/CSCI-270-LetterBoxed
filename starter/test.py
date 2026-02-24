@@ -6,6 +6,43 @@ with open("words.scrabble.txt") as f:
 
 puzzle = LetterBoxedSearchSpace(list("mkpzetuniach"), valid_words)
 
+def test_can_make_word_from_letters():
+    assert puzzle.can_make_word_from_letters("pie") == True
+    assert puzzle.can_make_word_from_letters("pier") == False
+    assert puzzle.can_make_word_from_letters("z") == True
+    assert puzzle.can_make_word_from_letters("mkpzetuniach") == True
+    assert puzzle.can_make_word_from_letters("") == True
+
+def test_has_letters_on_same_edge():
+    assert puzzle.has_letters_on_same_edge("aah") == True
+    assert puzzle.has_letters_on_same_edge("tuna") == True
+    assert puzzle.has_letters_on_same_edge("ztni") == True
+    assert puzzle.has_letters_on_same_edge("") == False
+    assert puzzle.has_letters_on_same_edge("mk") == True
+
+def test_filter_out_invalid_words():
+    word_list_1 = [
+        "acumen",
+        "acute",
+        "amen",
+        "amuse",
+        "cumin",
+        "haunt",
+        "humane",
+        "impeach",
+        "man",
+        "minute",
+        "opaque",
+        "panzer",
+        "piana",
+        "quantum",
+        "quench",
+        "unique"
+    ]
+
+    expected_result_1 = ['amen', 'humane', 'man', 'piana']
+    assert expected_result_1 == puzzle.filter_out_invalid_words(word_list_1)
+
 def test_constructor_creates_instance_variables():
     expected_game_letters = ['m', 'k', 'p','z', 'e', 't', 'u', 'n', 'i', 'a', 'c', 'h']
     expected_start_state = ('', None, (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
@@ -49,6 +86,9 @@ def test_is_valid_word():
     assert puzzle.is_valid_word('zzzzz') == False
     assert puzzle.is_valid_word('zombies') == False
     assert puzzle.is_valid_word('zzz') == False
+    assert puzzle.is_valid_word("ahh") == False
+    assert puzzle.is_valid_word("troy") == False
+    assert puzzle.is_valid_word("man") == True
 
 def test_is_prefix_of_valid_word():
     assert puzzle.is_prefix_of_valid_word("") == True
@@ -111,25 +151,35 @@ def test_a_star_search():
     return solution
 
 if __name__ == "__main__":
+
+    test_can_make_word_from_letters()
+    print("\n#0 can_make_word_from_letters passes!")
+
+    test_has_letters_on_same_edge()
+    print("\n#1 has_letters_on_same_edge passes!")
+
+    test_filter_out_invalid_words()
+    print("\n#2 filter_out_invalid_words_passes!")
+
     test_constructor_creates_instance_variables()
-    print("\n#1 LetterBoxedSearchSpace constructor passes!")
+    print("\n#3 LetterBoxedSearchSpace constructor passes!")
     
     test_is_final_state()
-    print("\n#2 is_final_state passes!")
+    print("\n#4 is_final_state passes!")
 
     test_is_valid_word()
-    print("\n#3 is_valid_word passes!")
+    print("\n#5 is_valid_word passes!")
 
     test_is_prefix_of_valid_word()
-    print("\n#4 is_valid_prefix_of_word passes!")
+    print("\n#6 is_valid_prefix_of_word passes!")
 
     test_does_not_lie_on_same_edge()
-    print("\n#5 does_not_lie_on_same_edge passes!")
+    print("\n#7 does_not_lie_on_same_edge passes!")
 
     test_get_sucessors()
-    print("\n#6 get_successors passes!")
+    print("\n#8 get_successors passes!")
 
     print("\nAll tests passed!")
     # test_search_space()
 
-    test_a_star_search()
+    # test_a_star_search()
