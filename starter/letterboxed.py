@@ -127,7 +127,7 @@ class LetterBoxedSearchSpace(SearchSpace):
 
         while left <= right:
             mid = (right + left) // 2
-            word_prefix = self.valid_words[mid][:prefix_length]
+            word_prefix = self.valid_words[mid][0:prefix_length]
 
             if word_prefix == prefix:
                 return True
@@ -154,6 +154,16 @@ class LetterBoxedSearchSpace(SearchSpace):
         return not (prev_chosen_index // 3 == current_chosen_index // 3) # assumes there are 12 game letters in the game
 
     def get_successors(self, state):
+        """
+        Returns a list of tuples that reflected updated_game states.
+
+        Args:
+            state tuple(str, int, tuple(int)) : the current game state
+        Return:
+            successor_list tuple(tuple(str, int, tuple(int)), str, int)) : tuple consisting
+            of new_state, action (letter chosen), and the cost associated with making the action.
+            Cost is 1 if a 'ENTER' was pressed to make a new word, else cost is 0.
+        """
         successor_list = []
         prev_letter_index = state[1]
         prev_word_built = state[0]
@@ -161,6 +171,8 @@ class LetterBoxedSearchSpace(SearchSpace):
 
         for i in range(len(self.game_letters)):
             if self.does_not_lie_on_same_edge(prev_letter_index, i) and self.is_prefix_of_valid_word(prev_word_built + self.game_letters[i]):
+
+                # copy to avoid re-referencing
                 new_tracker = list(letter_tracker)
                 new_tracker[i] = 1
                 new_tracker = tuple(new_tracker)
@@ -178,6 +190,16 @@ class LetterBoxedSearchSpace(SearchSpace):
 
 
 def create_heuristic(letters, words):
+    """
+    Heuristical function meant to score a state given a state and search space object.
+
+    Args:
+        letters list(str) : list of game letters
+        words list(str) : list of dictionary words
+
+    Return:
+        heuristical function
+    """
 
     def find_longest_unique_lettered_word_count(words):
         max_length = float("-inf")
@@ -187,22 +209,43 @@ def create_heuristic(letters, words):
         return max_length
     
     def find_least_used_letter_in_dictionary(game_letters, words):
-        freq_map = {letter:0 for letter in game_letters}
+        # assumes words is a filtered list of words
+        freq_map = {}
+        
+        for letter in game_letters:
+            freq_map[letter] = 0
 
         for word in words:
             for letter in word:
                 if letter in freq_map:
                     freq_map[letter] += 1
 
-        min_freq = min(freq_map.values())
-        
-        for letter, freq in freq_map.items():
-            if freq == min_freq:
-                return game_letters.index(letter)
+        min_freq = float('inf')
+        min_freq_letter = None
+
+        for key in freq_map:
+            if freq_map[key] < min_freq:
+                min_freq = freq_map[key]
+                min_freq_letter = key
+        return game_letters.index(min_freq_letter)
             
     max_length_word = find_longest_unique_lettered_word_count(words)  
     least_freq_letter_index = find_least_used_letter_in_dictionary(list("mkpzetuniach"), words)
+
     def heuristic(state, space):
+        """
+        A score is assigned based on:
+
+        1) given the longest unique letter word existing in words, and given the number of
+        0s in the state, if game can be completed using 1 word, +1
+        
+        if game needs atleast 2 words can get all game letters used, +2
+
+        2) if the game letter that is the least frequency used in the word list is still present (value is 0)
+            add more weighting to that state. (+1 if least frequent letter not used, +2 if not)
+        """
+
+        # admissable (just using this, it cuts node visit down to ~15,000)
         state_score = 0
         state_0s_count = state[2].count(0)
         score = state_0s_count / max_length_word
@@ -211,6 +254,13 @@ def create_heuristic(letters, words):
         elif score > 0:
             state_score += 2
 
+        """
+        not sure if this one is admissable. using it cuts nodes visited to ~1000 
+        my idea is that if you were a human playing the game,
+        ideally you would want rare letters (if 'z' or 'x' if they were in game letters) to be used
+        if they are, you are closer to beating the game. if not, it would be harder to come up with
+        words that use that letter. my implementation just uses the #1 least freq
+        """
         if state[2][least_freq_letter_index] == 1:
             state_score += 1
         else:

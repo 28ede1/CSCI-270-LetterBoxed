@@ -141,7 +141,7 @@ def test_get_sucessors():
     assert actual_successors_2 == expected_successors_2
 
 def test_search_space():
-    uniform_cost_search(puzzle, memoize=True)
+    print(uniform_cost_search(puzzle, memoize=True))
 
 def test_a_star_search():
     words = puzzle.valid_words
@@ -180,6 +180,6 @@ if __name__ == "__main__":
     print("\n#8 get_successors passes!")
 
     print("\nAll tests passed!")
-    # test_search_space()
+    test_search_space()
 
-    # test_a_star_search()
+    print(test_a_star_search())
