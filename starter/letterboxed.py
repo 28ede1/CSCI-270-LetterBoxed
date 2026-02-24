@@ -231,7 +231,6 @@ def create_heuristic(letters, words):
         return game_letters.index(min_freq_letter)
             
     max_length_word = find_longest_unique_lettered_word_count(words)  
-    least_freq_letter_index = find_least_used_letter_in_dictionary(list("mkpzetuniach"), words)
 
     def heuristic(state, space):
         """
