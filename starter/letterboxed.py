@@ -1,4 +1,5 @@
 from search import SearchSpace, a_star_search
+from math import *
 
 class LetterBoxedSearchSpace(SearchSpace):
 
@@ -237,34 +238,15 @@ def create_heuristic(letters, words):
         A score is assigned based on:
 
         1) given the longest unique letter word existing in words, and given the number of
-        0s in the state, if game can be completed using 1 word, +1
-        
-        if game needs atleast 2 words can get all game letters used, +2
-
-        2) if the game letter that is the least frequency used in the word list is still present (value is 0)
-            add more weighting to that state. (+1 if least frequent letter not used, +2 if not)
+        0s in the state, if game can be completed using 1 word, +1, if two words minimum are needed +2, if three words 
+        +3, etc
         """
 
-        # admissable (just using this, it cuts node visit down to ~15,000)
+        # admissable
         state_score = 0
         state_0s_count = state[2].count(0)
-        score = state_0s_count / max_length_word
-        if score <= 0:
-            state_score += 1
-        elif score > 0:
-            state_score += 2
-
-        """
-        not sure if this one is admissable. using it cuts nodes visited to ~1000 
-        my idea is that if you were a human playing the game,
-        ideally you would want rare letters (if 'z' or 'x' if they were in game letters) to be used
-        if they are, you are closer to beating the game. if not, it would be harder to come up with
-        words that use that letter. my implementation just uses the #1 least freq
-        """
-        if state[2][least_freq_letter_index] == 1:
-            state_score += 1
-        else:
-            state_score += 2
+        score = ceil(state_0s_count / max_length_word)
+        state_score += score
 
         return state_score
     return heuristic
